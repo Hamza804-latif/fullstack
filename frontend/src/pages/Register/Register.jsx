@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [image, setImage] = useState(null);
@@ -7,11 +8,35 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function Signup() {
+  async function Signup() {
     if (image && name && email && password) {
-      console.log(image, name, email, password);
+      try {
+        let data = {
+          image,
+          name,
+          email,
+          password,
+        };
+
+        let result = await fetch("http://localhost:5000/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        let jsonData = await result.json();
+        if (jsonData?.status === 200) {
+          toast.success(jsonData.msg);
+        } else {
+          toast.error(jsonData.msg);
+        }
+        console.log(jsonData);
+      } catch (error) {
+        console.log("error in register", error);
+      }
     } else {
-      alert("please fill all fields");
+      toast.error("please fill all fields");
     }
   }
   function ConvertImage(event) {
