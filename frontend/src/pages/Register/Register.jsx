@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Register = () => {
@@ -7,6 +7,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   async function Signup() {
     if (image && name && email && password) {
@@ -28,6 +29,7 @@ const Register = () => {
         let jsonData = await result.json();
         if (jsonData?.status === 200) {
           toast.success(jsonData.msg);
+          navigate("/login");
         } else {
           toast.error(jsonData.msg);
         }
