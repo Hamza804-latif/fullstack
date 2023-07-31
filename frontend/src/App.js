@@ -5,6 +5,7 @@ import Register from "./pages/Register/Register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Dashboard/Home/Home";
+import Root from "./pages/Root";
 
 function App() {
   return (
@@ -12,7 +13,9 @@ function App() {
       <BrowserRouter>
         <ToastContainer />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Root />}>
+            <Route path="/home" element={<Home />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

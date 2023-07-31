@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
 import { toast } from "react-toastify";
@@ -7,6 +7,15 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let token = JSON.parse(localStorage.getItem("userToken"));
+    if (token) {
+      navigate("/home");
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
   async function LoginUser() {
     if (email && password) {
@@ -21,7 +30,7 @@ const Login = () => {
       if (jsonData?.status === 200) {
         localStorage.setItem("userToken", JSON.stringify(jsonData?.token));
         toast.success(jsonData?.msg);
-        navigate("/");
+        navigate("/home");
       } else {
         toast.error(jsonData?.msg);
       }
