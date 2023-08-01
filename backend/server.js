@@ -1,7 +1,7 @@
 const express = require("express");
 const ConnectDatabase = require("./database/index.js");
 const cors = require("cors");
-const { RegisterModel } = require("./database/modls.js");
+const { RegisterModel, ProductsModel } = require("./database/modls.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -60,6 +60,30 @@ app.post("/login", async (req, resp) => {
     }
   } catch (error) {
     console.log("error in login route", error);
+  }
+});
+
+app.post("/addproduct", async (req, resp) => {
+  let { image, name, price, stock } = req.body;
+  try {
+    await ProductsModel.create({
+      image,
+      name,
+      price,
+      stock,
+    });
+    resp.json({ status: 200, msg: "Product Added Successfully" });
+  } catch (error) {
+    console.log("error in add product", error);
+  }
+});
+
+app.get("/allproducts", async (req, resp) => {
+  try {
+    let products = await ProductsModel.find({});
+    resp.json({ status: 200, data: products });
+  } catch (error) {
+    console.log("error in all products", error);
   }
 });
 

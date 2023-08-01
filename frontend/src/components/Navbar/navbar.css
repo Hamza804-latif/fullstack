@@ -1,0 +1,38 @@
+.navbar-main {
+    padding: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.2);
+
+}
+
+.navbar-content {
+    display: flex;
+    width: 1280px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+.menus {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menus a {
+    text-decoration: none;
+    color: black;
+}
+
+.menus button {
+    padding: 2px 6px;
+    background-color: coral;
+    color: white;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
