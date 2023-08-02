@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
 import { toast } from "react-toastify";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [data, setData] = useState([]);
+  const naviagte = useNavigate();
 
   useEffect(() => {
     GetAll();
@@ -20,6 +22,26 @@ const Home = () => {
       toast.error(error);
     }
   }
+  async function Delete(id) {
+    try {
+      let res = await fetch(`http://localhost:5000/delete/${id}`, {
+        method: "DELETE",
+      });
+      let jsonData = await res.json();
+      if (jsonData?.status === 200) {
+        toast.success(jsonData?.msg);
+        GetAll();
+      } else {
+        toast.error(jsonData?.msg);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function Edit(id) {
+    naviagte(`/editproduct/${id}`);
+  }
   return (
     <div className="table">
       <table border="1px">
@@ -33,7 +55,7 @@ const Home = () => {
         {data.length > 0 ? (
           data.map((item) => {
             return (
-              <tr>
+              <tr key={item?._id}>
                 <td>
                   <img src={item?.image} alt="" />
                 </td>
@@ -41,8 +63,8 @@ const Home = () => {
                 <td>{item?.price}</td>
                 <td>{item?.stock}</td>
                 <td>
-                  <button>Edit</button>
-                  <button>Delete</button>
+                  <button onClick={() => Edit(item?._id)}>Edit</button>
+                  <button onClick={() => Delete(item?._id)}>Delete</button>
                 </td>
               </tr>
             );

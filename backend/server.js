@@ -87,6 +87,45 @@ app.get("/allproducts", async (req, resp) => {
   }
 });
 
+app.delete("/delete/:id", async (req, resp) => {
+  let id = req?.params?.id;
+  try {
+    let deletedData = await ProductsModel.deleteOne({ _id: id });
+    if (deletedData?.deletedCount > 0) {
+      resp.json({ status: 200, msg: "Product Deleted Successfully" });
+    } else {
+      resp.json({ status: 404, msg: "Product not Found" });
+    }
+  } catch (error) {
+    console.log("error in delete", error);
+  }
+});
+
+app.put("/editdata/:id", async (req, resp) => {
+  let id = req.params.id;
+  let { image, name, price, stock } = req.body;
+  try {
+    let updatedData = await ProductsModel.updateOne(
+      { _id: id },
+      {
+        $set: {
+          image,
+          name,
+          price,
+          stock,
+        },
+      }
+    );
+    if (updatedData?.modifiedCount > 0) {
+      resp.json({ status: 200, msg: "Product Updated Successfully" });
+    } else {
+      resp.json({ status: 404, msg: "Product Not Found" });
+    }
+  } catch (error) {
+    console.log("error in update", error);
+  }
+});
+
 app.listen(5000, function () {
   console.log("server is running on http://localhost:5000");
 });
