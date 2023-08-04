@@ -42,38 +42,57 @@ const Home = () => {
   function Edit(id) {
     naviagte(`/editproduct/${id}`);
   }
+
+  async function Search(e) {
+    if (e) {
+      let res = await fetch(`http://localhost:5000/search/${e}`);
+      let jsonData = await res.json();
+      if (jsonData?.status === 200) {
+        setData(jsonData?.data);
+      }
+    } else {
+      GetAll();
+    }
+  }
   return (
-    <div className="table">
-      <table border="1px">
-        <tr>
-          <th>product image</th>
-          <th>product name</th>
-          <th>price</th>
-          <th>stock</th>
-          <th>actions</th>
-        </tr>
-        {data.length > 0 ? (
-          data.map((item) => {
-            return (
-              <tr key={item?._id}>
-                <td>
-                  <img src={item?.image} alt="" />
-                </td>
-                <td>{item?.name}</td>
-                <td>{item?.price}</td>
-                <td>{item?.stock}</td>
-                <td>
-                  <button onClick={() => Edit(item?._id)}>Edit</button>
-                  <button onClick={() => Delete(item?._id)}>Delete</button>
-                </td>
-              </tr>
-            );
-          })
-        ) : (
-          <tr>No data Found</tr>
-        )}
-      </table>
-    </div>
+    <>
+      <div className="table">
+        <input
+          type="text"
+          placeholder="Search Product..."
+          onChange={(e) => Search(e.target.value)}
+        />
+        <table border="1px">
+          <tr>
+            <th>product image</th>
+            <th>product name</th>
+            <th>price</th>
+            <th>stock</th>
+            <th>actions</th>
+          </tr>
+          {data.length > 0 ? (
+            data.map((item) => {
+              return (
+                <tr key={item?._id}>
+                  <td>
+                    <img src={item?.image} alt="" />
+                  </td>
+                  <td>{item?.name}</td>
+                  <td>{item?.price}</td>
+                  <td>{item?.stock}</td>
+                  <td>
+                    <button onClick={() => Edit(item?._id)}>Edit</button>
+                    <button onClick={() => Delete(item?._id)}>Delete</button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>No data Found</tr>
+          )}
+        </table>
+      </div>
+    </>
   );
 };
 

@@ -1,6 +1,16 @@
 .table {
     width: fit-content;
     margin: 60px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.table input {
+    width: 500px;
+    align-self: center;
+    padding: 8px 3px;
+
 }
 
 table {

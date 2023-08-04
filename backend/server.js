@@ -126,6 +126,28 @@ app.put("/editdata/:id", async (req, resp) => {
   }
 });
 
+app.get("/singleproduct/:id", async (req, resp) => {
+  let id = req.params.id;
+  try {
+    let singleproduct = await ProductsModel.findOne({ _id: id });
+    resp.json({ status: 200, data: singleproduct });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/search/:searchQuery", async (req, resp) => {
+  let search = req.params.searchQuery;
+  try {
+    let searchRes = await ProductsModel.find({
+      $or: [{ name: { $regex: search } }, { price: { $regex: search } }],
+    });
+    resp.json({ status: 200, data: searchRes });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.listen(5000, function () {
   console.log("server is running on http://localhost:5000");
 });

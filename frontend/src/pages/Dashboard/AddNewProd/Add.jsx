@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "./add.css";
 import Avatar from "../../../assets/productAvatar.jpeg";
@@ -11,7 +11,23 @@ const Add = () => {
   const [stock, setStock] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log(id);
+  useEffect(() => {
+    if (id) {
+      GetSingleData();
+    }
+  }, []);
+
+  async function GetSingleData() {
+    let res = await fetch(`http://localhost:5000/singleproduct/${id}`);
+    let jsonData = await res.json();
+    if (jsonData?.status === 200) {
+      let { image, name, price, stock } = jsonData?.data;
+      setImage(image);
+      setName(name);
+      setPrice(price);
+      setStock(stock);
+    }
+  }
 
   async function Add() {
     if (image && name && price && stock) {
@@ -64,16 +80,19 @@ const Add = () => {
         <input
           type="text"
           placeholder="Enter product name"
+          value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
           type="text"
           placeholder="Enter product price"
+          value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
         <input
           type="text"
           placeholder="Enter product stock"
+          value={stock}
           onChange={(e) => setStock(e.target.value)}
         />
         <button onClick={Add}>{id ? "Update" : "Add"}</button>
