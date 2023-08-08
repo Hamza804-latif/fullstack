@@ -44,7 +44,7 @@ app.post("/login", async (req, resp) => {
         jwt.sign(
           { id: emailCheck?._id, name: emailCheck?.name },
           tokenSecret,
-          { expiresIn: "10m" },
+          { expiresIn: "1m" },
           (err, token) => {
             if (err)
               return resp.json({ status: 500, msg: "Internal Server Error" });
@@ -63,7 +63,7 @@ app.post("/login", async (req, resp) => {
   }
 });
 
-app.post("/addproduct", async (req, resp) => {
+app.post("/addproduct", CheckToken, async (req, resp) => {
   let { image, name, price, stock } = req.body;
   try {
     await ProductsModel.create({
@@ -78,7 +78,7 @@ app.post("/addproduct", async (req, resp) => {
   }
 });
 
-app.get("/allproducts", async (req, resp) => {
+app.get("/allproducts", CheckToken, async (req, resp) => {
   try {
     let products = await ProductsModel.find({});
     resp.json({ status: 200, data: products });
@@ -87,7 +87,7 @@ app.get("/allproducts", async (req, resp) => {
   }
 });
 
-app.delete("/delete/:id", async (req, resp) => {
+app.delete("/delete/:id", CheckToken, async (req, resp) => {
   let id = req?.params?.id;
   try {
     let deletedData = await ProductsModel.deleteOne({ _id: id });
@@ -101,7 +101,7 @@ app.delete("/delete/:id", async (req, resp) => {
   }
 });
 
-app.put("/editdata/:id", async (req, resp) => {
+app.put("/editdata/:id", CheckToken, async (req, resp) => {
   let id = req.params.id;
   let { image, name, price, stock } = req.body;
   try {
@@ -126,7 +126,7 @@ app.put("/editdata/:id", async (req, resp) => {
   }
 });
 
-app.get("/singleproduct/:id", async (req, resp) => {
+app.get("/singleproduct/:id", CheckToken, async (req, resp) => {
   let id = req.params.id;
   try {
     let singleproduct = await ProductsModel.findOne({ _id: id });
@@ -136,7 +136,7 @@ app.get("/singleproduct/:id", async (req, resp) => {
   }
 });
 
-app.get("/search/:searchQuery", async (req, resp) => {
+app.get("/search/:searchQuery", CheckToken, async (req, resp) => {
   let search = req.params.searchQuery;
   try {
     let searchRes = await ProductsModel.find({
@@ -147,6 +147,26 @@ app.get("/search/:searchQuery", async (req, resp) => {
     console.log(error);
   }
 });
+
+function CheckToken(req, resp, next) {
+  let token = req.headers.auth;
+  if (token !== "null") {
+    token = token.split(" ")[1];
+    jwt.verify(token, tokenSecret, (err, user) => {
+      if (err) {
+        resp.json({
+          status: 403,
+          login: false,
+          msg: "Token expired login again",
+        });
+        return;
+      }
+      next();
+    });
+  } else {
+    resp.json({ status: 403, login: false, msg: "Token expired login again" });
+  }
+}
 
 app.listen(5000, function () {
   console.log("server is running on http://localhost:5000");

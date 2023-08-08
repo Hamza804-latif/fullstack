@@ -18,7 +18,12 @@ const Add = () => {
   }, []);
 
   async function GetSingleData() {
-    let res = await fetch(`http://localhost:5000/singleproduct/${id}`);
+    let token = JSON.parse(localStorage.getItem("userToken"));
+    let res = await fetch(`http://localhost:5000/singleproduct/${id}`, {
+      headers: {
+        auth: token ? `bearer ${token}` : null,
+      },
+    });
     let jsonData = await res.json();
     if (jsonData?.status === 200) {
       let { image, name, price, stock } = jsonData?.data;
@@ -26,11 +31,19 @@ const Add = () => {
       setName(name);
       setPrice(price);
       setStock(stock);
+    } else {
+      toast.error(jsonData?.msg);
+    }
+    if (jsonData?.status !== 200 && jsonData?.login === false) {
+      localStorage.removeItem("userToken");
+      navigate("/login");
+      return;
     }
   }
 
   async function Add() {
     if (image && name && price && stock) {
+      let token = JSON.parse(localStorage.getItem("userToken"));
       let method = id ? "PUT" : "POST";
       let route = id ? `editdata/${id}` : "addproduct";
       try {
@@ -38,6 +51,7 @@ const Add = () => {
           method: method,
           headers: {
             "Content-Type": "application/json",
+            auth: token ? `bearer ${token}` : null,
           },
           body: JSON.stringify({ image, name, price, stock }),
         });
@@ -45,6 +59,13 @@ const Add = () => {
         if (jsonData?.status === 200) {
           toast.success(jsonData?.msg);
           navigate("/home");
+        } else {
+          toast.error(jsonData?.msg);
+        }
+        if (jsonData?.status !== 200 && jsonData?.login === false) {
+          localStorage.removeItem("userToken");
+          navigate("/login");
+          return;
         }
       } catch (error) {
         toast.error(error);

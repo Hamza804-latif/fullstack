@@ -12,20 +12,36 @@ const Home = () => {
   }, []);
 
   async function GetAll() {
+    let token = JSON.parse(localStorage.getItem("userToken"));
     try {
-      let res = await fetch("http://localhost:5000/allproducts");
+      let res = await fetch("http://localhost:5000/allproducts", {
+        headers: {
+          auth: token ? `bearer ${token}` : null,
+        },
+      });
       let jsonData = await res.json();
       if (jsonData?.status === 200) {
         setData(jsonData?.data);
+      } else {
+        toast.error(jsonData.msg);
+      }
+      if (jsonData?.status !== 200 && jsonData?.login === false) {
+        localStorage.removeItem("userToken");
+        naviagte("/login");
+        return;
       }
     } catch (error) {
       toast.error(error);
     }
   }
   async function Delete(id) {
+    let token = JSON.parse(localStorage.getItem("userToken"));
     try {
       let res = await fetch(`http://localhost:5000/delete/${id}`, {
         method: "DELETE",
+        headers: {
+          auth: token ? `bearer ${token}` : null,
+        },
       });
       let jsonData = await res.json();
       if (jsonData?.status === 200) {
@@ -33,6 +49,11 @@ const Home = () => {
         GetAll();
       } else {
         toast.error(jsonData?.msg);
+      }
+      if (jsonData?.status !== 200 && jsonData?.login === false) {
+        localStorage.removeItem("userToken");
+        naviagte("/login");
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -44,11 +65,23 @@ const Home = () => {
   }
 
   async function Search(e) {
+    let token = JSON.parse(localStorage.getItem("userToken"));
     if (e) {
-      let res = await fetch(`http://localhost:5000/search/${e}`);
+      let res = await fetch(`http://localhost:5000/search/${e}`, {
+        headers: {
+          auth: token ? `bearer ${token}` : null,
+        },
+      });
       let jsonData = await res.json();
       if (jsonData?.status === 200) {
         setData(jsonData?.data);
+      } else {
+        toast.error(jsonData?.msg);
+      }
+      if (jsonData?.status !== 200 && jsonData?.login === false) {
+        localStorage.removeItem("userToken");
+        naviagte("/login");
+        return;
       }
     } else {
       GetAll();
